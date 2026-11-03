@@ -6,9 +6,9 @@ name: api
 on:
   push:
     branches: [main]
-    paths: ["src/**", ".github/workflows/deploy-api.yml"] # only when the API changes
+    paths: ["api/**", ".github/workflows/deploy-api.yml"] # only when the API changes
   pull_request: # build only: checks the change compiles, deploys nothing
-    paths: ["src/**"]
+    paths: ["api/**"]
   workflow_dispatch: # "Run workflow" button in the Actions tab
 
 permissions:
@@ -40,7 +40,7 @@ jobs:
       - name: Build (and push)
         uses: docker/build-push-action@v7
         with:
-          context: ./src
+          context: ./api
           push: ${{ env.PUBLISH == 'true' }}
           tags: ${{ env.IMAGE }}
           build-args: VERSION=${{ github.sha }} # shown in /api/message: which commit is running

@@ -40,7 +40,7 @@ jobs:
       - name: Build (and push)
         uses: docker/build-push-action@v7
         with:
-          context: ./api
+          context: ./src
           push: ${{ env.PUBLISH == 'true' }}
           tags: ${{ env.IMAGE }}
           build-args: VERSION=${{ github.sha }} # shown in /api/message: which commit is running

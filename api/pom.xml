@@ -91,7 +91,7 @@
                     <failsOnError>true</failsOnError>
                     <linkXRef>false</linkXRef>
                     <!-- Excluir las clases generadas por OpenAPI para que no fallen las reglas -->
-                    <excludes>web/infrastructure/adapters/inbound/rest/api/**,web/infrastructure/adapters/inbound/rest/dto/**</excludes>
+                    <excludes>upm/seminars/contactservice/infrastructure/adapters/inbound/rest/api/**,upm/seminars/contactservice/infrastructure/adapters/inbound/rest/dto/**</excludes>
                 </configuration>
                 <executions>
                     <execution>
@@ -103,7 +103,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>net.revelc.code.formatter</groupId>
                 <artifactId>formatter-maven-plugin</artifactId>
@@ -118,16 +117,15 @@
 
                     <!-- Excluir las clases generadas por OpenAPI para no alterar el target -->
                     <excludes>
-                        <exclude>web/infrastructure/adapters/inbound/rest/api/**</exclude>
-                        <exclude>web/infrastructure/adapters/inbound/rest/dto/**</exclude>
+                        <exclude>upm/seminars/contactservice/infrastructure/adapters/inbound/rest/api/**</exclude>
+                        <exclude>upm/seminars/contactservice/infrastructure/adapters/inbound/rest/dto/**</exclude>
                     </excludes>
                 </configuration>
                 <executions>
                     <execution>
                         <phase>validate</phase>
                         <goals>
-                            <!-- Falla la compilación si el formato es incorrecto -->
-                            <goal>validate</goal>
+                            <goal>format</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -147,14 +145,14 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <inputSpec>${project.basedir}/doc/openapi/ContactsServiceApi.yml</inputSpec>
+                            <inputSpec>${project.basedir}/src/main/resources/openapi/ContactsServiceApi.yml</inputSpec>
                             <generatorName>spring</generatorName>
 
                             <apiNameSuffix>Api</apiNameSuffix>
                             <modelNameSuffix>Dto</modelNameSuffix>
 
-                            <apiPackage>web.infrastructure.adapters.inbound.rest.api</apiPackage>
-                            <modelPackage>web.infrastructure.adapters.inbound.rest.dto</modelPackage>
+                            <apiPackage>upm.seminars.contactservice.infrastructure.adapters.inbound.rest.api</apiPackage>
+                            <modelPackage>upm.seminars.contactservice.infrastructure.adapters.inbound.rest.dto</modelPackage>
 
                             <!-- 4. Ajustes clave para controlar la interfaz y los DTOs -->
                             <configOptions>

@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+        "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+        "https://checkstyle.org/dtds/configuration_1_3.dtd">
+
+<module name="Checker">
+    <module name="TreeWalker">
+
+        <!-- 1. Documentación mínima a nivel de clase, interfaz o record público -->
+        <module name="MissingJavadocType">
+            <property name="scope" value="public"/>
+        </module>
+
+        <!-- 2. Documentación obligatoria en métodos, pero exime a las implementaciones (@Override) -->
+        <module name="MissingJavadocMethod">
+            <property name="scope" value="public"/>
+            <!-- Permite omitir Javadoc si el método está implementando una interfaz -->
+            <property name="allowedAnnotations" value="Override"/>
+            <!-- Permite omitir Javadoc en getters y setters simples -->
+            <property name="allowMissingPropertyJavadoc" value="true"/>
+            <!-- No exige Javadoc en métodos de menos de 3 líneas -->
+            <property name="minLineCount" value="3"/>
+        </module>
+
+        <!-- 3. Limpieza de código esencial (reglas que no estorban) -->
+        <module name="UnusedImports"/>
+        <module name="RedundantImport"/>
+        <module name="ModifierOrder"/>
+
+    </module>
+</module>

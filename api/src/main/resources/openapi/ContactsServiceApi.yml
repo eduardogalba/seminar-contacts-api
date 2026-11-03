@@ -1,0 +1,171 @@
+openapi: 3.0.3
+info:
+  title: ContactsService API
+  version: 1.0.0
+  description: Contract-First API specification for managing contacts using Hexagonal Architecture.
+
+tags:
+  - name: ContactsService
+    description: API para la gestión de contactos
+
+paths:
+  /api/v1/contacts:
+    post:
+      summary: Create a new contact
+      operationId: createContact
+      tags:
+        - ContactsService
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactRequest'
+      responses:
+        '201':
+          description: Contact created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactResponse'
+
+    get:
+      summary: Get all contacts
+      operationId: getAllContacts
+      tags:
+        - ContactsService
+      responses:
+        '200':
+          description: List of contacts retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ContactResponse'
+
+  /api/v1/contacts/{id}:
+    get:
+      summary: Get a contact by ID
+      operationId: getContactById
+      tags:
+        - ContactsService
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Unique identifier of the contact
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Contact found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactResponse'
+        '404':
+          description: Contact not found
+
+    put:
+      summary: Update an existing contact
+      operationId: updateContact
+      tags:
+        - ContactsService
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactRequest'
+      responses:
+        '200':
+          description: Contact updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactResponse'
+        '404':
+          description: Contact not found
+
+    delete:
+      summary: Delete a contact by ID
+      operationId: deleteContact
+      tags:
+        - ContactsService
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Contact deleted successfully
+        '404':
+          description: Contact not found
+
+components:
+  schemas:
+
+    ContactBase:
+      type: object
+      required:
+        - firstName
+      properties:
+        firstName:
+          type: string
+          description: Contact's first name
+          example: "John"
+        lastName:
+          type: string
+          description: Contact's last name
+          example: "Doe"
+        phoneNumbers:
+          type: array
+          description: List of phone numbers
+          items:
+            type: string
+          example: ["+1234567890", "+0987654321"]
+        emails:
+          type: array
+          description: List of email addresses
+          items:
+            type: string
+            format: email
+          example: ["john.doe@example.com"]
+        address:
+          type: string
+          description: Physical or mailing address
+          example: "123 Main Street, Suite 100"
+        birthDate:
+          type: string
+          format: date
+          description: Birth date in YYYY-MM-DD format
+          example: "1990-01-15"
+
+    ContactRequest:
+      allOf:
+        - $ref: '#/components/schemas/ContactBase'
+
+    ContactResponse:
+      allOf:
+        - type: object
+          required:
+            - id
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: Unique system identifier for the contact
+              example: "123e4567-e89b-12d3-a456-426614174000"
+        - $ref: '#/components/schemas/ContactBase'

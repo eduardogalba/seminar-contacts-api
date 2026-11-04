@@ -6,7 +6,7 @@ name: api
 on:
   push:
     branches: [main]
-    paths: ["api/**", ".github/workflows/deploy-api.yml"] # only when the API changes
+    paths: ["api/**", ".github/workflows/build_n_deploy_api.yml"] # only when the API changes
   pull_request: # build only: checks the change compiles, deploys nothing
     paths: ["api/**"]
   workflow_dispatch: # "Run workflow" button in the Actions tab
@@ -23,7 +23,7 @@ env:
   # Tagged with the commit SHA: every image is traceable to its code, and rollback = deploy an older SHA.
   IMAGE: docker.io/${{ vars.DOCKERHUB_USERNAME || 'local' }}/seminar-api:${{ github.sha }}
   # Push and deploy only on main (not on pull requests) and once Docker Hub is configured.
-  PUBLISH: ${{ github.event_name != 'pull_request' && vars.DOCKERHUB_USERNAME != '' }}
+  PUBLISH: ${{ vars.DOCKERHUB_USERNAME != '' }}
 
 jobs:
   build:

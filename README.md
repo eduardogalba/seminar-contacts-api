@@ -10,7 +10,7 @@ REST API for contact management, developed as part of a cloud deployment seminar
 for contacts, includes request validations, persists data in PostgreSQL, and exposes interactive API
 documentation through Swagger.
 
-## Tecnologías Utilizadas
+## Technologies Used
 
 - **Java 21**
 - **Spring Boot**, including **Spring Web**, **Spring Data JPA** and **Spring Validation**
@@ -21,26 +21,26 @@ documentation through Swagger.
 - **Azure Container Apps** for cloud deployment
 - **GitHub Actions** for CI/CD automation
 
-## Despliegue Automático (CI/CD)
+## Automated Deployment (CI/CD)
 
-El proyecto incluye el workflow de GitHub Actions
-`.github/workflows/build_n_deploy_api.yml`. Este workflow se ejecuta automáticamente cuando se realiza un
-`push` a la rama `main` —para cambios en la API o en el propio workflow— y realiza las siguientes tareas:
+The project includes the GitHub Actions workflow
+`.github/workflows/build_n_deploy_api.yml`. This workflow runs automatically when a `push` is made to the
+`main` branch—for changes to the API or the workflow itself—and performs the following tasks:
 
-1. Construye la imagen Docker de la aplicación.
-2. Publica la imagen en Docker Hub usando el SHA del commit como etiqueta.
-3. Actualiza el contenedor desplegado en Azure Container Apps para utilizar la nueva imagen.
+1. Builds the application's Docker image.
+2. Publishes the image to Docker Hub using the commit SHA as its tag.
+3. Updates the container deployed in Azure Container Apps to use the new image.
 
-Para que el despliegue funcione, es necesario configurar en GitHub, preferiblemente dentro del environment
-`seminar-contacts`, las credenciales y variables utilizadas por el workflow:
+For the deployment to work, configure the credentials and variables used by the workflow in GitHub,
+preferably within the `seminar-contacts` environment:
 
-- **Secretos**: `DOCKERHUB_TOKEN`, `AZURE_CREDENTIALS` y `DB_CONTACT_SERVICE_PASSWORD`.
+- **Secrets**: `DOCKERHUB_TOKEN`, `AZURE_CREDENTIALS`, and `DB_CONTACT_SERVICE_PASSWORD`.
 - **Variables**: `DOCKERHUB_USERNAME`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`, `AZURE_RESOURCE_GROUP`,
-  `CONTAINER_APP_NAME`, `DB_CONTACT_SERVICE_HOST`, `DB_CONTACT_SERVICE_NAME` y `DB_CONTACT_SERVICE_USER`.
+  `CONTAINER_APP_NAME`, `DB_CONTACT_SERVICE_HOST`, `DB_CONTACT_SERVICE_NAME`, and `DB_CONTACT_SERVICE_USER`.
 
-Estos valores se configuran en **Settings → Secrets and variables → Actions** del repositorio. El token de
-Docker Hub se utiliza para publicar la imagen y `AZURE_CREDENTIALS` debe contener las credenciales del service
-principal utilizado para autenticarse contra Azure.
+Configure these values under **Settings → Secrets and variables → Actions** in the repository. The Docker Hub
+token is used to publish the image, while `AZURE_CREDENTIALS` must contain the credentials for the service
+principal used to authenticate with Azure.
 
 If you are new to the repository, this section gives you a quick tour of what it does and how it is put
 together.
@@ -84,93 +84,92 @@ The database schema is managed by **Flyway**, with migration scripts under
 `src/main/resources/flyway/releases/`. Hibernate runs in `validate` mode, so it only checks that the entities
 match the schema — it never creates or alters tables.
 
-## Ejecución en Local
+## Running Locally
 
-Asumiendo que PostgreSQL está disponible y que las variables de entorno están configuradas según la sección
-de instalación y configuración, la API puede iniciarse directamente con Maven:
+Assuming PostgreSQL is available and the environment variables are configured as described in the installation
+and configuration section, the API can be started directly with Maven:
 
 ```bash
 cd api
 mvn spring-boot:run
 ```
 
-También se puede levantar la aplicación usando Docker Compose desde la raíz del repositorio:
+The application can also be started with Docker Compose from the repository root:
 
 ```bash
 docker compose up --build
 ```
 
-En ambos casos, la API queda disponible en `http://localhost:8080` cuando se ejecuta directamente con Maven.
-Con Docker Compose, el puerto publicado por defecto es `8081`, por lo que se accede mediante
-`http://localhost:8081`.
+When running directly with Maven, the API is available at `http://localhost:8080`. With Docker Compose, the
+default published port is `8081`, so the API is available at `http://localhost:8081`.
 
-## Documentación de la API (Swagger)
+## API Documentation (Swagger)
 
-Una vez levantada la aplicación, la interfaz interactiva de Swagger UI está disponible en:
+Once the application is running, the interactive Swagger UI is available at:
 
 - Maven: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
 - Docker Compose: [http://localhost:8081/swagger-ui/index.html](http://localhost:8081/swagger-ui/index.html)
 
-El documento OpenAPI en formato JSON se encuentra en `/v3/api-docs`:
+The OpenAPI document in JSON format is available at `/v3/api-docs`:
 
 - Maven: [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
 - Docker Compose: [http://localhost:8081/v3/api-docs](http://localhost:8081/v3/api-docs)
 
-## Instalación y Configuración
+## Installation and Configuration
 
-### Requisitos previos
+### Prerequisites
 
-Para ejecutar el proyecto localmente se necesita:
+To run the project locally, you need:
 
 - Java 21.
-- Maven 3.9 o superior si se ejecuta la aplicación fuera de Docker.
-- Docker y Docker Compose.
+- Maven 3.9 or later when running the application outside Docker.
+- Docker and Docker Compose.
 
-### Opción 1: levantar toda la aplicación con Docker Compose
+### Option 1: Run the entire application with Docker Compose
 
-Desde la raíz del repositorio, ejecuta:
+From the repository root, run:
 
 ```bash
 docker compose up --build
 ```
 
-Este comando inicia:
+This command starts:
 
-- PostgreSQL 16 en el puerto `5432`.
-- La API Spring Boot en `http://localhost:8081`.
+- PostgreSQL 16 on port `5432`.
+- The Spring Boot API at `http://localhost:8081`.
 
-La base de datos se crea con estos valores:
+The database is created with these values:
 
 ```text
-Base de datos: contacts_db
-Usuario:       contacts_user
-Contraseña:    contacts_pass
-Host:          postgres (desde el contenedor de la API)
-Puerto:        5432
+Database:      contacts_db
+User:          contacts_user
+Password:      contacts_pass
+Host:          postgres (from the API container)
+Port:          5432
 ```
 
-Las migraciones de Flyway se ejecutan automáticamente al iniciar la API. La documentación interactiva está
-disponible en [Swagger UI](http://localhost:8081/swagger-ui/index.html).
+Flyway migrations run automatically when the API starts. Interactive documentation is available in
+[Swagger UI](http://localhost:8081/swagger-ui/index.html).
 
-Para detener los contenedores:
+To stop the containers:
 
 ```bash
 docker compose down
 ```
 
-Para conservar los datos de PostgreSQL, no se debe añadir `-v` al comando anterior.
+To preserve PostgreSQL data, do not add `-v` to the command above.
 
-### Opción 2: ejecutar la API con Maven
+### Option 2: Run the API with Maven
 
-Esta opción utiliza Docker únicamente para PostgreSQL. Primero inicia la base de datos:
+This option uses Docker only for PostgreSQL. Start the database first:
 
 ```bash
 docker compose up -d postgres
 ```
 
-Después, configura las variables de entorno y ejecuta la aplicación desde la carpeta `api`.
+Then configure the environment variables and run the application from the `api` directory.
 
-En Linux/macOS:
+On Linux/macOS:
 
 ```bash
 export DB_CONTACT_SERVICE_HOST=localhost
@@ -183,7 +182,7 @@ cd api
 mvn spring-boot:run
 ```
 
-En PowerShell:
+On PowerShell:
 
 ```powershell
 $env:DB_CONTACT_SERVICE_HOST = "localhost"
@@ -196,24 +195,24 @@ Set-Location api
 mvn spring-boot:run
 ```
 
-En este modo, la API queda disponible en `http://localhost:8080` y Swagger UI en
+In this mode, the API is available at `http://localhost:8080` and Swagger UI at
 `http://localhost:8080/swagger-ui/index.html`.
 
-### Variables de entorno
+### Environment Variables
 
-La configuración de conexión a PostgreSQL se define en `api/src/main/resources/application.yml` mediante
-estas variables:
+The PostgreSQL connection is configured in `api/src/main/resources/application.yml` using the following
+environment variables:
 
-| Variable | Obligatoria | Valor por defecto | Descripción |
+| Variable | Required | Default value | Description |
 |---|---:|---|---|
-| `DB_CONTACT_SERVICE_HOST` | No | `localhost` | Host de PostgreSQL. |
-| `DB_CONTACT_SERVICE_PORT` | No | `5432` | Puerto de PostgreSQL. |
-| `DB_CONTACT_SERVICE_NAME` | No | `contacts_db` | Nombre de la base de datos. |
-| `DB_CONTACT_SERVICE_USER` | Sí | — | Usuario de PostgreSQL. |
-| `DB_CONTACT_SERVICE_PASSWORD` | Sí | — | Contraseña de PostgreSQL. |
+| `DB_CONTACT_SERVICE_HOST` | No | `localhost` | PostgreSQL host. |
+| `DB_CONTACT_SERVICE_PORT` | No | `5432` | PostgreSQL port. |
+| `DB_CONTACT_SERVICE_NAME` | No | `contacts_db` | Database name. |
+| `DB_CONTACT_SERVICE_USER` | Yes | — | PostgreSQL user. |
+| `DB_CONTACT_SERVICE_PASSWORD` | Yes | — | PostgreSQL password. |
 
-En Docker Compose, estas variables ya se proporcionan automáticamente al contenedor de la API. Si se ejecuta
-la aplicación directamente con Maven, deben definirse previamente en el entorno, como se muestra arriba.
+With Docker Compose, these variables are provided automatically to the API container. When running the
+application directly with Maven, define them in the environment beforehand as shown above.
 
-Hibernate utiliza `ddl-auto: validate`, por lo que no crea ni modifica tablas. Flyway aplica las migraciones
-ubicadas en `api/src/main/resources/flyway/` durante el arranque.
+Hibernate uses `ddl-auto: validate`, so it does not create or modify tables. Flyway applies the migrations
+located in `api/src/main/resources/flyway/` during startup.

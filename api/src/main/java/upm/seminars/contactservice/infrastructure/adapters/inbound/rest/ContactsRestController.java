@@ -33,7 +33,7 @@ public class ContactsRestController implements ContactsServiceApi {
         var createdContact = manageContactsUseCase.createContact(contact);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(createdContact.id()).toUri();
-        return ResponseEntity.created(location).build();
+        return ResponseEntity.created(location).body(contactMapper.toDto(createdContact));
     }
 
     @Override

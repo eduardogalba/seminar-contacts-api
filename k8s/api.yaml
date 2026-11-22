@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: seminar-api
+spec:
+  selector:
+    matchLabels:
+      app: seminar-api
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: seminar-api
+    spec:
+      containers:
+        - name: seminar-api
+          image: docker.io/<TU_DOCKERHUB_USERNAME>/seminar-api:<TAG> # Ej. latest o el SHA de un commit
+          ports:
+            - name: http
+              containerPort: 8080
+          envFrom:
+            - secretRef:
+                name: contacts-db-secret
+
+          startupProbe:
+            httpGet:
+              path: /v3/api-docs
+              port: http
+            periodSeconds: 5
+            failureThreshold: 12 # Hasta 60s para arranque de JVM + migraciones Flyway
+
+          livenessProbe:
+            httpGet:
+              path: /v3/api-docs
+              port: http
+            periodSeconds: 10
+            failureThreshold: 3
+
+          readinessProbe:
+            httpGet:
+              path: /v3/api-docs
+              port: http
+            periodSeconds: 5
+            failureThreshold: 2
+
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: tmp-volume
+              mountPath: /tmp
+
+      volumes:
+        - name: tmp-volume
+          emptyDir: {}
+      terminationGracePeriodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: seminar-api
+spec:
+  type: LoadBalancer
+  selector:
+    app: seminar-api
+  ports:
+    - port: 80
+      targetPort: http

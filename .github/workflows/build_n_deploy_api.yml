@@ -38,7 +38,9 @@ jobs:
         with:
           context: ./api
           push: ${{ env.PUBLISH == 'true' }}
-          tags: ${{ env.IMAGE }}
+          tags: |
+            ${{ env.IMAGE }}
+            docker.io/${{ vars.DOCKERHUB_USERNAME || 'local' }}/seminar-api:latest
           build-args: VERSION=${{ github.sha }}
 
   deploy:

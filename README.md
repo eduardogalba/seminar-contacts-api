@@ -42,6 +42,59 @@ Configure these values under **Settings → Secrets and variables → Actions** 
 token is used to publish the image, while `AZURE_CREDENTIALS` must contain the credentials for the service
 principal used to authenticate with Azure.
 
+## Infrastructure as Code
+
+The repository includes infrastructure definitions for both Kubernetes and Azure Container Apps:
+
+- **`k8s/`** contains Kubernetes manifests for the API `Deployment`, a `LoadBalancer` `Service`, database
+  configuration through a `Secret`, and a `HorizontalPodAutoscaler` that scales from 2 to 4 replicas based on
+  CPU utilization.
+- **`terraform/`** contains Terraform configuration for Azure. It provisions a resource group, an Azure
+  Container Apps environment, and the API Container App with external ingress, database environment variables,
+  and scaling between 1 and 3 replicas.
+
+### Kubernetes deployment
+
+You need a Kubernetes cluster with `kubectl` configured and a container image published in Docker Hub. Update
+the image reference in `k8s/api.yaml` and create the database secret from the example file:
+
+```bash
+cp k8s/secret.yaml.example k8s/secret.yaml
+```
+
+Edit `k8s/secret.yaml` with the database connection values, then apply the manifests:
+
+```bash
+kubectl apply -f k8s/secret.yaml
+kubectl apply -f k8s/api.yaml
+kubectl apply -f k8s/hpa.yaml
+```
+
+The Kubernetes cluster must have a metrics server installed for the HorizontalPodAutoscaler to calculate CPU
+utilization. Do not commit `k8s/secret.yaml` or store database credentials in source control.
+
+### Terraform deployment to Azure Container Apps
+
+You need Terraform, an Azure subscription, and an authenticated Azure CLI session. The AzureRM provider is
+configured in `terraform/main.tf` and uses version 4.x. From the `terraform` directory, initialize Terraform:
+
+```bash
+terraform init
+```
+
+Provide values for the variables declared in `terraform/variables.tf`, including the Azure subscription and
+resource group, Container App name, Docker image, and PostgreSQL connection details. Then review and apply the
+deployment:
+
+```bash
+terraform plan
+terraform apply
+```
+
+The configuration outputs the public API URL and the direct Swagger UI URL. The Container App uses external
+ingress on port `8080`, scales between 1 and 3 replicas, and ignores image tag changes made by GitHub Actions
+so that Terraform does not revert a CI/CD deployment.
+
 If you are new to the repository, this section gives you a quick tour of what it does and how it is put
 together.
 

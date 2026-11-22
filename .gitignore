@@ -4,6 +4,11 @@ api/target/
 !**/src/test/**/target/
 .kotlin
 
+# Terraform + Kubernetes
+k8s/secret.yaml
+terraform/*.tfvars
+terraform/.terraform/
+
 ### IntelliJ IDEA ###
 .idea/
 *.iws

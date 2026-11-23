@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: seminar-api
-          image: docker.io/<TU_DOCKERHUB_USERNAME>/seminar-api:<TAG> # Ej. latest o el SHA de un commit
+          image: docker.io/lumbalu/seminar-api:latest
           ports:
             - name: http
               containerPort: 8080
